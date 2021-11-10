@@ -72,11 +72,17 @@ namespace PromptTimeline
         [SerializeField] private Rect offsetRect;
         [SerializeField] private RectTransform parent;
         [SerializeField] private TMP_FontAsset tmpFontAsset;
+        [SerializeField] private Color textColor;
         [SerializeField] private int fontSizeMin = 80;
         [SerializeField] private int fontSizeMax = 120;
+
+        [SerializeField] private FontStyles fontStyles;
+        [SerializeField] private Vector2 resolution = new Vector2(1920, 1080);
+        [SerializeField] private Vector2 textPadding = new Vector2(30, 30);
         [SerializeField] private Vector2 promptMargin = new Vector2(0, 200);
+        [SerializeField] private TextAlignmentOptions textAlignmentOptions;
         [SerializeField] private MovePromptVector movePromptVector;
-        [SerializeField][TextArea(10,100)] private string promptText;
+        [SerializeField][TextArea(10,300)] private string promptText;
         [SerializeField] [TextArea(2,4)]private List<string> textList;
         [SerializeField] private List<PromptValues> promptValues = new List<PromptValues>();
         [SerializeField] private List<TextMeshProUGUI> textMeshProUguis;
@@ -150,25 +156,20 @@ namespace PromptTimeline
             {
                 sb.Clear();
                 var textMeshPro = new GameObject().AddComponent<TextMeshProUGUI>();
+                textMeshPro.gameObject.transform.localPosition = Vector3.zero;
                 textMeshPro.transform.SetParent(textParent.transform);
                 textMeshPro.font = tmpFontAsset;
                
                 textMeshPro.fontSizeMin = fontSizeMin;
                 textMeshPro.fontSizeMax = fontSizeMax;
                 textMeshPro.enableAutoSizing = true;
-                textMeshPro.autoSizeTextContainer = true;
-                // textMeshPro.rectTransform.anchoredPosition
-                // textMeshPro.rectTransform.sizeDelta = new Vector2(offsetRect.width, offsetRect.height);
-               
-                textMeshPro.alignment = TextAlignmentOptions.MidlineJustified;
+                textMeshPro.autoSizeTextContainer = false;
+                textMeshPro.rectTransform.sizeDelta =resolution-(textPadding*2);
+                textMeshPro.fontStyle = fontStyles;
                 textMeshPro.enableWordWrapping = true;
-                textMeshPro.overflowMode = TextOverflowModes.Ellipsis;
-
-                textMeshPro.rectTransform.sizeDelta = new Vector2(1920, 1080);
-                textMeshPro.rectTransform.ForceUpdateRectTransforms();
-                // textMeshPro.max = offsetRect.width;
+                textMeshPro.alignment = textAlignmentOptions;
+                textMeshPro.color = textColor;
                 
-                textMeshPro.autoSizeTextContainer = true;
                 for (int i = promptValue.start; i < promptValue.end+1; i++)
                 {
                     sb.AppendLine(textList[i]);
@@ -188,20 +189,20 @@ namespace PromptTimeline
 
                     if (textMeshProUguis.Count > 0) pos += new Vector2(textMeshPro.preferredWidth/2f, textMeshPro.preferredHeight/2f)*vec;
                
-                    textMeshPro.rectTransform.anchoredPosition = pos; 
-                
+                    textMeshPro.rectTransform.anchoredPosition3D = new Vector3(pos.x, pos.y, 0);
+
                     pos += new Vector2(textMeshPro.preferredWidth/2f+promptMargin.x, textMeshPro.preferredHeight / 2f+promptMargin.y)*vec;     
                 }
                 else
                 {
-                    textMeshPro.rectTransform.anchoredPosition = pos;
+                    textMeshPro.rectTransform.anchoredPosition3D = new Vector3(pos.x, pos.y, 0);
                     promptValue.anchoredPosition = pos;
                     pos += parent.rect.size* vec;
                 }
                
                 // pos += promptMargin*vec;
-                
-                
+                // textMeshPro.rectTransform.position = new Vector3(textMeshPro.rectTransform.position.x, textMeshPro.rectTransform.position.y, 0);
+                textMeshPro.rectTransform.ForceUpdateRectTransforms();
                 textMeshProUguis.Add(textMeshPro);
 
             }

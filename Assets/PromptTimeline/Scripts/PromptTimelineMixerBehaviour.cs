@@ -25,9 +25,10 @@ public class PromptTimelineMixerBehaviour : PlayableBehaviour
         int inputCount = playable.GetInputCount ();
 
         
-        Debug.Log(clips.Count);
+        // Debug.Log(clips.Count);
         var pos = Vector2.zero;
         // ToggleSubtitle(false);
+        bool isClipIn = false;
         for (int i = 0; i < inputCount; i++)
         {
             
@@ -38,13 +39,13 @@ public class PromptTimelineMixerBehaviour : PlayableBehaviour
             if(inputWeight > 0)
             {
                 pos += inputWeight * input.position;
+                isClipIn = true;
             }
             
             
             
         }
-        
-        m_TrackBinding.SetPosition(-pos);
+        if(isClipIn)m_TrackBinding.SetPosition(-pos);
     }
     
  
